@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" data-theme="aurora">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Output Renderer</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/variables.css" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/rtl.css" />
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Markdown + Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+
+<body>
+  <!-- Theme Switcher -->
+  <div class="theme-switcher" aria-label="Theme switcher">
+    <button id="themeButton" class="theme-button" type="button" aria-haspopup="listbox" aria-expanded="false">
+      <span class="theme-dot" aria-hidden="true"></span>
+      <span id="themeButtonLabel">Theme: Aurora</span>
+      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+    </button>
+
+    <div id="themeDropdown" class="theme-dropdown" role="listbox" aria-label="Select theme">
+      <div class="theme-option" role="option" tabindex="0" data-theme="aurora">
+        <span class="theme-icon aurora" aria-hidden="true"></span> Aurora (Light)
+      </div>
+      <div class="theme-option" role="option" tabindex="0" data-theme="midnight">
+        <span class="theme-icon midnight" aria-hidden="true"></span> Midnight (Dark)
+      </div>
+      <div class="theme-option" role="option" tabindex="0" data-theme="ocean">
+        <span class="theme-icon ocean" aria-hidden="true"></span> Ocean
+      </div>
+      <div class="theme-option" role="option" tabindex="0" data-theme="forest">
+        <span class="theme-icon forest" aria-hidden="true"></span> Forest
+      </div>
+      <div class="theme-option" role="option" tabindex="0" data-theme="sunset">
+        <span class="theme-icon sunset" aria-hidden="true"></span> Sunset
+      </div>
+    </div>
+  </div>
+
+  <main class="app">
+    <header class="header">
+      <h1>AI Output Renderer</h1>
+      <p class="subtitle">Markdown renderer with RTL support + Mermaid diagrams</p>
+    </header>
+
+    <section class="panel">
+      <label class="label" for="inputArea">Input (Markdown)</label>
+      <textarea id="inputArea" placeholder="Type Markdown here... (Ctrl/Cmd + Enter to render)"></textarea>
+
+      <div class="controls">
+        <button class="render" type="button" onclick="renderOutput()">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Render
+        </button>
+
+        <div class="direction-controls" aria-label="Text direction controls">
+          <button class="direction-toggle ltr-btn" type="button" onclick="setDirection('ltr')">
+            <i class="fa-solid fa-left-long"></i> LTR
+          </button>
+          <button class="direction-toggle rtl-btn" type="button" onclick="setDirection('rtl')">
+            <i class="fa-solid fa-right-long"></i> RTL
+          </button>
+          <button class="direction-toggle auto-btn" type="button" onclick="setDirection('auto')">
+            <i class="fa-solid fa-wand-magic"></i> Auto
+          </button>
+        </div>
+
+        <span id="langIndicator" class="language-indicator">Language: Manual LTR</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><i class="fa-regular fa-file-lines"></i> Output</h2>
+      <div id="output" class="ltr">Enter some text above to see the rendered output...</div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/rtl-detection.js"></script>
+  <script src="js/ui-controls.js"></script>
+  <script src="js/mermaid-controls.js"></script>
+  <script src="js/markdown-renderer.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

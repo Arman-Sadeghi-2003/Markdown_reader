@@ -1,0 +1,158 @@
+/* =========================================
+   Theme System (CSS Variables)
+   - Default theme: Aurora (Light)
+   - Themes: aurora, midnight, ocean, forest, sunset
+========================================= */
+
+:root {
+  /* Core */
+  --background: #f6f8ff;
+  --card-bg: #ffffff;
+  --text-color: #0f172a;
+  --muted-text: #475569;
+
+  /* Brand */
+  --primary: #6366f1;       /* Indigo */
+  --primary-dark: #4f46e5;
+
+  /* UI */
+  --border-color: #e6eaf2;
+  --shadow: rgba(2, 6, 23, 0.10);
+  --button-hover: rgba(15, 23, 42, 0.05);
+
+  /* Inputs */
+  --input-bg: #ffffff;
+  --input-border: #d9dfec;
+
+  /* Code */
+  --code-bg: #0b1220;
+  --code-text: #e6eef6;
+  --inline-code-bg: rgba(99, 102, 241, 0.12);
+  --inline-code-text: #3b2bdc;
+
+  /* Blockquote */
+  --blockquote-bg: #f8fafc;
+  --blockquote-border: #e2e8f0;
+
+  /* Table */
+  --table-zebra: rgba(2, 6, 23, 0.03);
+
+  /* Focus ring */
+  --focus: rgba(99, 102, 241, 0.28);
+}
+
+/* Midnight (Dark) */
+html[data-theme="midnight"] {
+  color-scheme: dark;
+
+  --background: #0b1220;
+  --card-bg: #0f1a2d;
+  --text-color: #e5e7eb;
+  --muted-text: #a7b0c0;
+
+  --primary: #60a5fa;
+  --primary-dark: #3b82f6;
+
+  --border-color: rgba(255, 255, 255, 0.10);
+  --shadow: rgba(0, 0, 0, 0.45);
+  --button-hover: rgba(255, 255, 255, 0.06);
+
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-border: rgba(255, 255, 255, 0.12);
+
+  --code-bg: #070c16;
+  --code-text: #e6eef6;
+  --inline-code-bg: rgba(96, 165, 250, 0.14);
+  --inline-code-text: #93c5fd;
+
+  --blockquote-bg: rgba(255, 255, 255, 0.04);
+  --blockquote-border: rgba(255, 255, 255, 0.10);
+
+  --table-zebra: rgba(255, 255, 255, 0.04);
+
+  --focus: rgba(96, 165, 250, 0.28);
+}
+
+/* Ocean */
+html[data-theme="ocean"] {
+  --background: #ecfeff;
+  --card-bg: #ffffff;
+  --text-color: #083344;
+  --muted-text: #0e7490;
+
+  --primary: #06b6d4;
+  --primary-dark: #0891b2;
+
+  --border-color: #ccecf2;
+  --shadow: rgba(8, 145, 178, 0.16);
+  --button-hover: rgba(8, 145, 178, 0.06);
+
+  --input-bg: #ffffff;
+  --input-border: #bfe7ef;
+
+  --inline-code-bg: rgba(6, 182, 212, 0.14);
+  --inline-code-text: #0e7490;
+
+  --blockquote-bg: rgba(6, 182, 212, 0.06);
+  --blockquote-border: rgba(6, 182, 212, 0.25);
+
+  --table-zebra: rgba(8, 145, 178, 0.05);
+
+  --focus: rgba(6, 182, 212, 0.28);
+}
+
+/* Forest */
+html[data-theme="forest"] {
+  --background: #f0fdf4;
+  --card-bg: #ffffff;
+  --text-color: #052e16;
+  --muted-text: #166534;
+
+  --primary: #10b981;
+  --primary-dark: #059669;
+
+  --border-color: #cfeee0;
+  --shadow: rgba(5, 150, 105, 0.14);
+  --button-hover: rgba(5, 150, 105, 0.06);
+
+  --input-bg: #ffffff;
+  --input-border: #c6ead9;
+
+  --inline-code-bg: rgba(16, 185, 129, 0.14);
+  --inline-code-text: #047857;
+
+  --blockquote-bg: rgba(16, 185, 129, 0.06);
+  --blockquote-border: rgba(16, 185, 129, 0.25);
+
+  --table-zebra: rgba(5, 150, 105, 0.05);
+
+  --focus: rgba(16, 185, 129, 0.28);
+}
+
+/* Sunset */
+html[data-theme="sunset"] {
+  --background: #fff7ed;
+  --card-bg: #ffffff;
+  --text-color: #431407;
+  --muted-text: #9a3412;
+
+  --primary: #f97316;
+  --primary-dark: #ea580c;
+
+  --border-color: #ffe0cc;
+  --shadow: rgba(234, 88, 12, 0.14);
+  --button-hover: rgba(234, 88, 12, 0.06);
+
+  --input-bg: #ffffff;
+  --input-border: #ffd6bd;
+
+  --inline-code-bg: rgba(249, 115, 22, 0.14);
+  --inline-code-text: #c2410c;
+
+  --blockquote-bg: rgba(249, 115, 22, 0.07);
+  --blockquote-border: rgba(249, 115, 22, 0.25);
+
+  --table-zebra: rgba(234, 88, 12, 0.05);
+
+  --focus: rgba(249, 115, 22, 0.28);
+}

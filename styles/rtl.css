@@ -1,0 +1,48 @@
+/* RTL (Right-to-Left) Support */
+
+/* Base RTL/LTR Classes */
+.rtl { direction: rtl; text-align: right; }
+.ltr { direction: ltr; text-align: left; }
+
+/* RTL Code Blocks */
+.rtl pre {
+  text-align: left;
+  direction: ltr;
+}
+
+.rtl pre::before {
+  left: auto;
+  right: 12px;
+}
+
+.rtl .copy-btn {
+  left: 10px;
+  right: auto;
+}
+
+/* RTL Blockquotes */
+.rtl blockquote {
+  border-left: none;
+  border-right: 4px solid var(--primary);
+  border-radius: 10px 0 0 10px;
+}
+
+.rtl blockquote::before {
+  left: auto;
+  right: -2px;
+}
+
+.rtl blockquote p {
+  padding-left: 0;
+  padding-right: 20px;
+}
+
+/* RTL Tables */
+.rtl table { direction: rtl; }
+
+/* RTL Lists */
+.rtl ul,
+.rtl ol {
+  padding-left: 0;
+  padding-right: 1.5em;
+}
