@@ -485,3 +485,29 @@ tr:hover {
         justify-content: center;
     }
 }
+
+/* Images - Make them responsive */
+#output img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#output img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+#output img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px var(--shadow);
+}
