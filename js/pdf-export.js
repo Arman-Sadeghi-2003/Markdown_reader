@@ -1,12 +1,11 @@
 /**
- * PDF Export Module - Improved with Better Text Rendering
- * Uses jsPDF with HTML parsing for cleaner, readable PDF output
- * Avoids image-based rendering for better text quality
+ * PDF Export Module - Improved with Persian Language Support
+ * Uses jsPDF with custom Vazir font for Persian text rendering
+ * Includes HTML parsing for cleaner, readable PDF output
  */
 
 async function downloadAsPDF() {
     const outputEl = document.getElementById('output');
-
     if (!outputEl || !outputEl.innerHTML.trim()) {
         alert('No content to export. Please render markdown first.');
         return;
@@ -16,20 +15,23 @@ async function downloadAsPDF() {
         // Show loading state
         const btn = document.querySelector('.pdf-download-btn');
         const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+        btn.innerHTML = '⏳ Generating PDF...';
         btn.disabled = true;
 
         // Load required libraries
         await loadPDFLibraries();
         
+        // Load Persian font
+        await loadPersianFont();
+
         // Perform export with better rendering
         await performPDFExport(outputEl, btn, originalText);
-        
+
     } catch (error) {
         console.error('PDF Export Error:', error);
         const btn = document.querySelector('.pdf-download-btn');
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download as PDF';
+            btn.innerHTML = '📥 Download as PDF';
             btn.disabled = false;
         }
         alert('Failed to export PDF: ' + error.message);
@@ -41,11 +43,110 @@ async function loadPDFLibraries() {
     if (!window.jspdf) {
         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     }
-    
+
     // Load html2canvas as fallback for complex elements (diagrams, images)
     if (!window.html2canvas) {
         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
     }
+}
+
+async function loadPersianFont() {
+    return new Promise((resolve, reject) => {
+        try {
+            // Create a file input element to load the font
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.ttf';
+            input.style.display = 'none';
+            
+            input.onchange = async (e) => {
+                try {
+                    const file = e.target.files[0];
+                    if (!file) {
+                        // User cancelled, try direct path
+                        await loadFontDirect();
+                        resolve();
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const fontBase64 = arrayBufferToBase64(event.target.result);
+                        registerFont(fontBase64);
+                        console.log('Persian font (Vazir) loaded successfully');
+                        resolve();
+                    };
+                    
+                    reader.onerror = function() {
+                        reject(new Error('Failed to read font file'));
+                    };
+                    
+                    reader.readAsArrayBuffer(file);
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            
+            // Try to load font directly using XMLHttpRequest (works for local files)
+            loadFontDirect()
+                .then(resolve)
+                .catch(() => {
+                    // If direct load fails, prompt user to select the font
+                    console.warn('Direct font loading failed. Please select Vazir.ttf font file.');
+                    input.click();
+                });
+                
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+async function loadFontDirect() {
+    return new Promise((resolve, reject) => {
+        const fontPath = 'fonts/Vazir.ttf'; // Relative path from HTML file
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', fontPath, true);
+        xhr.responseType = 'arraybuffer';
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const fontBase64 = arrayBufferToBase64(xhr.response);
+                registerFont(fontBase64);
+                console.log('Persian font (Vazir) loaded successfully from:', fontPath);
+                resolve();
+            } else {
+                reject(new Error(`Font not found at ${fontPath}`));
+            }
+        };
+        
+        xhr.onerror = function() {
+            reject(new Error(`Failed to load font from ${fontPath}`));
+        };
+        
+        xhr.send();
+    });
+}
+
+function registerFont(fontBase64) {
+    const { jsPDF } = window.jspdf;
+    const callAddFont = function () {
+        this.addFileToVFS('Vazir.ttf', fontBase64);
+        this.addFont('Vazir.ttf', 'Vazir', 'normal');
+    };
+    
+    jsPDF.API.events.push(['addFonts', callAddFont]);
+}
+
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
 }
 
 function loadScript(src) {
@@ -54,7 +155,7 @@ function loadScript(src) {
             resolve();
             return;
         }
-        
+
         const script = document.createElement('script');
         script.src = src;
         script.onload = resolve;
@@ -72,6 +173,9 @@ async function performPDFExport(outputEl, btn, originalText) {
             format: 'a4',
             compress: true
         });
+
+        // Set Persian font as default
+        doc.setFont('Vazir', 'normal');
 
         // Page dimensions
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -117,21 +221,21 @@ async function performPDFExport(outputEl, btn, originalText) {
             
             // Decode common HTML entities
             text = text.replace(/&amp;/g, '&')
-                       .replace(/&lt;/g, '<')
-                       .replace(/&gt;/g, '>')
-                       .replace(/&quot;/g, '"')
-                       .replace(/&#39;/g, "'")
-                       .replace(/&nbsp;/g, ' ');
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+                .replace(/&nbsp;/g, ' ');
             
             return text;
         }
 
         // Helper function to add text with wrapping
-        function addWrappedText(text, fontSize, fontStyle = 'normal', indent = 0) {
+        function addWrappedText(text, size, fontStyle = 'normal', indent = 0) {
             if (!text || text.trim().length === 0) return;
             
-            doc.setFontSize(fontSize);
-            doc.setFont('helvetica', fontStyle);
+            doc.setFontSize(size);
+            doc.setFont('Vazir', fontStyle);
             
             const lines = doc.splitTextToSize(text, maxWidth - indent);
             
@@ -163,6 +267,7 @@ async function performPDFExport(outputEl, btn, originalText) {
                 `;
                 
                 const codeClone = codeElement.cloneNode(true);
+                
                 // Remove copy button if exists
                 const copyBtn = codeClone.querySelector('.copy-btn');
                 if (copyBtn) copyBtn.remove();
@@ -170,13 +275,14 @@ async function performPDFExport(outputEl, btn, originalText) {
                 tempContainer.appendChild(codeClone);
                 document.body.appendChild(tempContainer);
 
-                // Render to canvas
+                // Render to canvas with letter rendering for Persian text
                 const canvas = await html2canvas(tempContainer, {
                     scale: 2,
                     backgroundColor: '#f5f5f5',
-                    logging: false
+                    logging: false,
+                    letterRendering: true
                 });
-
+                
                 document.body.removeChild(tempContainer);
 
                 // Add to PDF
@@ -204,13 +310,14 @@ async function performPDFExport(outputEl, btn, originalText) {
                 const canvas = await html2canvas(element, {
                     scale: 2,
                     backgroundColor: '#ffffff',
-                    logging: false
+                    logging: false,
+                    letterRendering: true
                 });
-
+                
                 const imgData = canvas.toDataURL('image/png');
                 const imgWidth = maxWidth;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
+
                 // Check if image fits, if not scale it down
                 let finalHeight = imgHeight;
                 let finalWidth = imgWidth;
@@ -220,14 +327,14 @@ async function performPDFExport(outputEl, btn, originalText) {
                     finalHeight = maxImageHeight;
                     finalWidth = (canvas.width * finalHeight) / canvas.height;
                 }
-                
+
                 checkPageBreak(finalHeight);
                 doc.addImage(imgData, 'PNG', margin, yPosition, finalWidth, finalHeight);
                 yPosition += finalHeight + 5;
                 
             } catch (error) {
                 console.error('Error rendering diagram:', error);
-                addWrappedText('[Diagram]', fontSize.body, 'italic');
+                addWrappedText('[Diagram]', fontSize.body, 'normal');
             }
         }
 
@@ -236,7 +343,7 @@ async function performPDFExport(outputEl, btn, originalText) {
         
         for (const element of children) {
             const tagName = element.tagName.toLowerCase();
-            
+
             // Skip controls and buttons
             if (element.classList.contains('copy-btn') || 
                 element.classList.contains('mermaid-controls')) {
@@ -251,8 +358,9 @@ async function performPDFExport(outputEl, btn, originalText) {
                 
                 const text = getCleanText(element);
                 const size = fontSize[`h${level}`] || fontSize.body;
+                
                 doc.setFontSize(size);
-                doc.setFont('helvetica', 'bold');
+                doc.setFont('Vazir', 'normal');
                 
                 const lines = doc.splitTextToSize(text, maxWidth);
                 for (const line of lines) {
@@ -300,9 +408,9 @@ async function performPDFExport(outputEl, btn, originalText) {
                 
                 const text = getCleanText(element);
                 doc.setFontSize(fontSize.body);
-                doc.setFont('helvetica', 'italic');
-                const lines = doc.splitTextToSize(text, maxWidth - 10);
+                doc.setFont('Vazir', 'normal');
                 
+                const lines = doc.splitTextToSize(text, maxWidth - 10);
                 for (const line of lines) {
                     checkPageBreak(lineHeight);
                     doc.text(line, margin + 5, yPosition);
@@ -319,18 +427,18 @@ async function performPDFExport(outputEl, btn, originalText) {
                 
                 // Extract table data
                 const headers = Array.from(element.querySelectorAll('th')).map(th => getCleanText(th));
-                const rows = Array.from(element.querySelectorAll('tr')).slice(1).map(tr => 
+                const rows = Array.from(element.querySelectorAll('tr')).slice(1).map(tr =>
                     Array.from(tr.querySelectorAll('td')).map(td => getCleanText(td))
                 );
 
                 if (headers.length > 0) {
                     // Draw table manually for better control
                     doc.setFontSize(fontSize.body);
-                    doc.setFont('helvetica', 'bold');
+                    doc.setFont('Vazir', 'normal');
                     
                     // Calculate column widths
                     const colWidth = maxWidth / headers.length;
-                    
+
                     // Draw header
                     doc.setFillColor(99, 102, 241);
                     doc.setTextColor(255, 255, 255);
@@ -342,8 +450,8 @@ async function performPDFExport(outputEl, btn, originalText) {
                     
                     yPosition += 8;
                     doc.setTextColor(0, 0, 0);
-                    doc.setFont('helvetica', 'normal');
-                    
+                    doc.setFont('Vazir', 'normal');
+
                     // Draw rows
                     rows.forEach((row, rowIndex) => {
                         checkPageBreak(8);
@@ -352,7 +460,7 @@ async function performPDFExport(outputEl, btn, originalText) {
                             doc.setFillColor(249, 249, 249);
                             doc.rect(margin, yPosition, maxWidth, 7, 'F');
                         }
-                        
+
                         row.forEach((cell, i) => {
                             const cellText = doc.splitTextToSize(cell, colWidth - 4);
                             doc.text(cellText[0] || '', margin + (i * colWidth) + 2, yPosition + 5);
@@ -363,6 +471,7 @@ async function performPDFExport(outputEl, btn, originalText) {
                     
                     yPosition += 5;
                 }
+                
                 continue;
             }
 
@@ -435,4 +544,4 @@ async function performPDFExport(outputEl, btn, originalText) {
 window.downloadAsPDF = downloadAsPDF;
 
 // Log that the module is loaded
-console.log('Improved PDF Export module loaded successfully');
+console.log('PDF Export module with Persian support loaded successfully');
