@@ -511,3 +511,101 @@ tr:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 20px var(--shadow);
 }
+
+
+/* ============================================
+   Markdown Task List / Checkbox Styling
+   ============================================ */
+
+/* Task list container */
+#output ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#output li {
+  position: relative;
+  padding-left: 0;
+  margin-bottom: 0.8em;
+}
+
+/* Style task list items specifically */
+#output li.task-list-item {
+  list-style: none;
+  padding-left: 2em;
+  position: relative;
+}
+
+/* Checkbox styling */
+#output input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 0.25em;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 2px solid var(--input-border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+#output input[type="checkbox"]:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+#output input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-color: var(--primary-dark);
+}
+
+/* Checkmark inside checked checkbox */
+#output input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Style for checked task text (strikethrough) */
+#output li.task-list-item input[type="checkbox"]:checked + * {
+  text-decoration: line-through;
+  color: var(--muted-text);
+  opacity: 0.7;
+}
+
+/* Ensure proper spacing for nested lists */
+#output ul ul {
+  margin-top: 0.5em;
+  padding-left: 1.5em;
+}
+
+/* Fix for regular lists that shouldn't be task lists */
+#output ul:not(.contains-task-list) {
+  list-style: disc;
+  padding-left: 1.5em;
+}
+
+#output ul:not(.contains-task-list) li {
+  padding-left: 0;
+}
+
+#output ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+}
+
+#output ol li {
+  padding-left: 0;
+}

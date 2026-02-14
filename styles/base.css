@@ -1,13 +1,17 @@
 /* Base Styles */
 
-* { box-sizing: border-box; }
+* { 
+  box-sizing: border-box; 
+}
 
-html, body { height: 100%; }
+html, body { 
+  height: 100%; 
+}
 
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, sans-serif;
-  background-color: var(--background);
+  background: var(--background);
   color: var(--text-color);
   line-height: 1.6;
   padding: 20px;
@@ -34,7 +38,9 @@ h2 {
   align-items: center;
 }
 
-h2 i { color: var(--primary); }
+h2 i { 
+  color: var(--primary); 
+}
 
 .subtitle {
   margin: 6px 0 0;
@@ -56,11 +62,20 @@ a {
   transition: border-bottom-color 0.2s ease;
 }
 
-a:hover { border-bottom-color: var(--primary); }
+a:hover { 
+  border-bottom-color: var(--primary); 
+}
 
-/* Lists */
-ul, ol { padding-left: 1.5em; }
-li { margin-bottom: 0.5em; }
+/* Lists - Base styles (will be overridden for task lists) */
+ul, ol { 
+  padding-left: 1.5em;
+  margin: 0.8em 0;
+}
+
+li { 
+  margin-bottom: 0.5em;
+  line-height: 1.8;
+}
 
 /* Horizontal Rule */
 hr {
@@ -79,4 +94,34 @@ hr {
   padding: 16px;
   margin: 14px 0;
   transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Selection styling */
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
