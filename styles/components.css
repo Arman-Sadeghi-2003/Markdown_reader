@@ -555,6 +555,17 @@ tr:hover {
   flex-shrink: 0;
 }
 
+/* RTL checkbox positioning */
+.rtl #output li.task-list-item {
+  padding-left: 0;
+  padding-right: 2em;
+}
+
+.rtl #output input[type="checkbox"] {
+  left: auto;
+  right: 0;
+}
+
 #output input[type="checkbox"]:hover {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--focus);
