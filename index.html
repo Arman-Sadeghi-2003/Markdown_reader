@@ -41,66 +41,42 @@
       color: var(--muted-text);
     }
     .status-dot {
-      width: 9px;
-      height: 9px;
+      width: 9px; height: 9px;
       border-radius: 50%;
       background: #6b7280;
       flex-shrink: 0;
       transition: background 0.3s ease;
     }
     .status-dot.waiting { background: #f59e0b; animation: pulse 1.5s infinite; }
-    .status-dot.ok { background: #22c55e; }
-    .status-dot.error { background: #ef4444; }
+    .status-dot.ok      { background: #22c55e; }
+    .status-dot.error   { background: #ef4444; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
     .status-text { flex: 1; }
     .pdf-download-btn {
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 2px solid var(--primary);
-      border-radius: 10px;
-      background: rgba(99, 102, 241, 0.1);
-      color: var(--primary);
-      transition: all 200ms ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
+      padding: 10px 18px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: 2px solid var(--primary); border-radius: 10px;
+      background: rgba(99, 102, 241, 0.1); color: var(--primary);
+      transition: all 200ms ease; display: inline-flex; align-items: center; gap: 7px;
     }
     .pdf-download-btn:hover {
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: white;
-      border-color: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px var(--shadow);
+      color: white; border-color: var(--primary-dark);
+      transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow);
     }
-    .pdf-download-btn:active { transform: translateY(0); }
+    .pdf-download-btn:active  { transform: translateY(0); }
     .pdf-download-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 0;
-    }
+    .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 0; }
     .toolbar .direction-controls { margin-left: auto; }
     .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      padding: 60px 20px;
-      color: var(--muted-text);
-      text-align: center;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 14px; padding: 60px 20px;
+      color: var(--muted-text); text-align: center;
     }
     .empty-state i { font-size: 2.8rem; opacity: 0.35; }
     .empty-state p { font-size: 15px; font-style: italic; max-width: 340px; line-height: 1.5; }
     .empty-state code {
       background: var(--code-bg, rgba(0,0,0,.08));
-      padding: 2px 6px;
-      border-radius: 5px;
-      font-size: 12px;
+      padding: 2px 6px; border-radius: 5px; font-size: 12px;
     }
     @media (max-width: 768px) {
       .pdf-download-btn { width: 100%; justify-content: center; }
@@ -139,11 +115,9 @@
         <label class="label" style="margin:0">
           <i class="fas fa-book-open"></i> Preview
         </label>
-
         <button class="pdf-download-btn" onclick="downloadAsPDF()" title="Download as PDF">
           <i class="fas fa-file-pdf"></i> PDF
         </button>
-
         <div class="direction-controls">
           <button class="direction-toggle ltr-btn active" onclick="setDirection('ltr')" title="Left to Right">
             <i class="fas fa-arrow-right"></i> LTR
@@ -155,7 +129,6 @@
             <i class="fas fa-wand-magic-sparkles"></i> Auto
           </button>
         </div>
-
         <span class="language-indicator" id="langIndicator">LTR</span>
       </div>
 
@@ -179,22 +152,22 @@
 
   <script>
     (function () {
-      const API_URL = '/api/content';
-      const POLL_MS = 1500;
-      const dot = document.getElementById('statusDot');
+      // Read the session id from this page's own URL: /view?id=<hex>
+      const params  = new URLSearchParams(window.location.search);
+      const id      = params.get('id');
+
+      const dot        = document.getElementById('statusDot');
       const statusText = document.getElementById('statusText');
       const statusTime = document.getElementById('statusTime');
-      let lastTimestamp = null;
 
       function setStatus(state, message, time) {
-        dot.className = 'status-dot ' + state;
+        dot.className        = 'status-dot ' + state;
         statusText.textContent = message;
         statusTime.textContent = time || '';
       }
 
       function formatTime(ts) {
-        if (!ts) return '';
-        return new Date(ts).toLocaleTimeString();
+        return ts ? new Date(ts).toLocaleTimeString() : '';
       }
 
       function ensureHiddenInput() {
@@ -208,32 +181,44 @@
         return el;
       }
 
+      // No id in the URL — show a helpful error instead of polling forever
+      if (!id) {
+        setStatus('error', 'No session id in URL. Open this page via /view?id=<id>', '');
+        return;
+      }
+
+      const API_URL     = `/api/content?id=${encodeURIComponent(id)}`;
+      const POLL_MS     = 1500;
+      let   lastTimestamp = null;
+
       async function poll() {
         try {
           const res = await fetch(API_URL, { cache: 'no-store' });
+
+          // 404 means the session expired or never existed
+          if (res.status === 404) {
+            setStatus('error', 'Session not found or expired. Please re-render.', '');
+            return;
+          }
+
           if (!res.ok) throw new Error('HTTP ' + res.status);
 
           const data = await res.json();
-
-          if (!data.markdown) {
-            setStatus('waiting', 'API connected — no content yet.', '');
-            return;
-          }
 
           if (data.timestamp !== lastTimestamp) {
             lastTimestamp = data.timestamp;
             ensureHiddenInput().value = data.markdown;
             renderOutput();
-            setStatus('ok', 'Content rendered successfully.', 'Last update: ' + formatTime(data.timestamp));
+            setStatus('ok', 'Rendered.', 'Last update: ' + formatTime(data.timestamp));
           } else {
-            setStatus('ok', 'Showing latest content.', 'Last update: ' + formatTime(data.timestamp));
+            setStatus('ok', 'Up to date.', 'Last update: ' + formatTime(data.timestamp));
           }
         } catch {
-          setStatus('error', 'Cannot reach API server. Is server.js running?', '');
+          setStatus('error', 'Cannot reach API server.', '');
         }
       }
 
-      setStatus('waiting', 'Connecting to local API…', '');
+      setStatus('waiting', 'Loading session…', '');
       poll();
       setInterval(poll, POLL_MS);
     })();
