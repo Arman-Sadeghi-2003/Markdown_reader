@@ -1,11 +1,11 @@
-/* Base Styles */
+/* Base Styles — Luxury Light Theme */
 
-* { 
-  box-sizing: border-box; 
+* {
+  box-sizing: border-box;
 }
 
-html, body { 
-  height: 100%; 
+html, body {
+  height: 100%;
 }
 
 body {
@@ -15,12 +15,12 @@ body {
   color: var(--text-color);
   line-height: 1.6;
   padding: 20px;
-  transition: background-color 200ms ease, color 200ms ease;
 }
 
 .app {
   max-width: 980px;
   margin: 0 auto;
+  padding-bottom: 2rem;
 }
 
 .header {
@@ -38,8 +38,8 @@ h2 {
   align-items: center;
 }
 
-h2 i { 
-  color: var(--primary); 
+h2 i {
+  color: var(--primary);
 }
 
 .subtitle {
@@ -62,17 +62,17 @@ a {
   transition: border-bottom-color 0.2s ease;
 }
 
-a:hover { 
-  border-bottom-color: var(--primary); 
+a:hover {
+  border-bottom-color: var(--primary);
 }
 
-/* Lists - Base styles (will be overridden for task lists) */
-ul, ol { 
+/* Lists */
+ul, ol {
   padding-left: 1.5em;
   margin: 0.8em 0;
 }
 
-li { 
+li {
   margin-bottom: 0.5em;
   line-height: 1.8;
 }
@@ -93,32 +93,31 @@ hr {
   border-radius: 12px;
   padding: 16px;
   margin: 14px 0;
-  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
 }
 
-/* Selection styling */
+/* Selection */
 ::selection {
   background: var(--primary);
-  color: white;
+  color: #FFFAF5;
 }
 
 ::-moz-selection {
   background: var(--primary);
-  color: white;
+  color: #FFFAF5;
 }
 
-/* Scrollbar styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--surface-alt);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--border-strong);
   border-radius: 5px;
 }
 
