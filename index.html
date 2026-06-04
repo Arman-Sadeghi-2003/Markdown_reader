@@ -1,149 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Renderer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Renderer</title>
 
-  <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <script src="libs/marked.min.js"></script>
-  <script src="libs/mermaid.min.js"></script>
+    <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
+    <script src="libs/marked.min.js"></script>
+    <script src="libs/mermaid.min.js"></script>
 
-  <link rel="stylesheet" href="styles/variables.css">
-  <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/components.css">
-  <link rel="stylesheet" href="styles/rtl.css">
+    <link rel="stylesheet" href="styles/variables.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/rtl.css">
 </head>
 <body>
-  <div class="app">
+    <div class="app">
 
-    <div class="header">
-      <h1>📝 Markdown Renderer</h1>
-      <p class="subtitle">WebView — content pushed via local API</p>
-    </div>
-
-    <div class="status-bar">
-      <span class="status-dot waiting" id="statusDot"></span>
-      <span class="status-text" id="statusText">Waiting for content from API…</span>
-      <span id="statusTime"></span>
-    </div>
-
-    <div class="panel">
-      <div class="toolbar">
-        <label class="label" style="margin:0">
-          <i class="fas fa-book-open"></i> Preview
-        </label>
-
-        <button class="pdf-download-btn" onclick="downloadAsPDF()" title="Download as PDF">
-          <i class="fas fa-file-pdf"></i> PDF
-        </button>
-
-        <div class="direction-controls">
-          <button class="direction-toggle ltr-btn active" onclick="setDirection('ltr')" title="Left to Right">
-            <i class="fas fa-arrow-right"></i> LTR
-          </button>
-          <button class="direction-toggle rtl-btn" onclick="setDirection('rtl')" title="Right to Left">
-            <i class="fas fa-arrow-left"></i> RTL
-          </button>
-          <button class="direction-toggle auto-btn" onclick="setDirection('auto')" title="Auto Detect">
-            <i class="fas fa-wand-magic-sparkles"></i> Auto
-          </button>
+        <div class="header">
+            <h1>📝 Markdown Renderer</h1>
+            <p class="subtitle">WebView — content pushed via local API</p>
         </div>
 
-        <span class="language-indicator" id="langIndicator">LTR</span>
-      </div>
-
-      <div id="output" class="ltr">
-        <div class="empty-state">
-          <i class="fas fa-satellite-dish"></i>
-          <p>Listening for content…<br>
-          POST your markdown to<br>
-          <code>/api/render</code></p>
+        <div class="status-bar">
+            <span class="status-dot waiting" id="statusDot"></span>
+            <span class="status-text" id="statusText">Waiting for content from API…</span>
+            <span id="statusTime"></span>
         </div>
-      </div>
+
+        <div class="panel">
+            <div class="toolbar">
+                <label class="label" style="margin:0">
+                    <i class="fas fa-book-open"></i> Preview
+                </label>
+
+                <button class="pdf-download-btn" onclick="downloadAsPDF()" title="Download as PDF">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+
+                <div class="direction-controls">
+                    <button class="direction-toggle ltr-btn active" onclick="setDirection('ltr')" title="Left to Right">
+                        <i class="fas fa-arrow-right"></i> LTR
+                    </button>
+                    <button class="direction-toggle rtl-btn" onclick="setDirection('rtl')" title="Right to Left">
+                        <i class="fas fa-arrow-left"></i> RTL
+                    </button>
+                    <button class="direction-toggle auto-btn" onclick="setDirection('auto')" title="Auto Detect">
+                        <i class="fas fa-wand-magic-sparkles"></i> Auto
+                    </button>
+                </div>
+
+                <span class="language-indicator" id="langIndicator">LTR</span>
+            </div>
+
+            <div id="output" class="ltr">
+                <div class="empty-state">
+                    <i class="fas fa-satellite-dish"></i>
+                    <p>
+                        Listening for content…<br>
+                        POST your markdown to<br>
+                        <code>/api/render</code>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
-  </div>
+    <script src="js/rtl-detection.js"></script>
+    <script src="js/markdown-renderer.js"></script>
+    <script src="js/ui-controls.js"></script>
+    <script src="js/pdf-export.js"></script>
+    <script src="js/mermaid-controls.js"></script>
+    <script src="js/config.js"></script>
 
-  <script src="js/rtl-detection.js"></script>
-  <script src="js/markdown-renderer.js"></script>
-  <script src="js/ui-controls.js"></script>
-  <script src="js/pdf-export.js"></script>
-  <script src="js/mermaid-controls.js"></script>
-  <script src="js/config.js"></script>
+    <script>
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const dot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const statusTime = document.getElementById('statusTime');
 
-  <script>
-    (function () {
-      const params     = new URLSearchParams(window.location.search);
-      const id         = params.get('id');
-      const dot        = document.getElementById('statusDot');
-      const statusText = document.getElementById('statusText');
-      const statusTime = document.getElementById('statusTime');
+            function setStatus(state, message, time) {
+                dot.className = 'status-dot ' + state;
+                statusText.textContent = message;
+                statusTime.textContent = time || '';
+            }
 
-      function setStatus(state, message, time) {
-        dot.className          = 'status-dot ' + state;
-        statusText.textContent = message;
-        statusTime.textContent = time || '';
-      }
+            function formatTime(ts) {
+                return ts ? new Date(ts).toLocaleTimeString() : '';
+            }
 
-      function formatTime(ts) {
-        return ts ? new Date(ts).toLocaleTimeString() : '';
-      }
+            function ensureHiddenInput() {
+                let el = document.getElementById('inputArea');
+                if (!el) {
+                    el = document.createElement('textarea');
+                    el.id = 'inputArea';
+                    el.style.display = 'none';
+                    document.body.appendChild(el);
+                }
+                return el;
+            }
 
-      function ensureHiddenInput() {
-        let el = document.getElementById('inputArea');
-        if (!el) {
-          el = document.createElement('textarea');
-          el.id = 'inputArea';
-          el.style.display = 'none';
-          document.body.appendChild(el);
-        }
-        return el;
-      }
+            if (!id) {
+                setStatus('error', 'No session id in URL. Open this page via /view?id=<id>', '');
+                return;
+            }
 
-      if (!id) {
-        setStatus('error', 'No session id in URL. Open this page via /view?id=<id>', '');
-        return;
-      }
+            const API_URL = `/api/markdown/content?id=${encodeURIComponent(id)}`;
+            const POLL_MS = 1500;
+            let lastTimestamp = null;
 
-      const API_URL       = `/api/content?id=${encodeURIComponent(id)}`;
-      const POLL_MS       = 1500;
-      let   lastTimestamp = null;
+            async function poll() {
+                try {
+                    const res = await fetch(API_URL, { cache: 'no-store' });
 
-      async function poll() {
-        try {
-          const res = await fetch(API_URL, { cache: 'no-store' });
+                    if (res.status === 404) {
+                        setStatus('error', 'Session not found or expired. Please re-render.', '');
+                        return;
+                    }
 
-          if (res.status === 404) {
-            setStatus('error', 'Session not found or expired. Please re-render.', '');
-            return;
-          }
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
 
-          if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
 
-          const data = await res.json();
+                    if (data.timestamp !== lastTimestamp) {
+                        lastTimestamp = data.timestamp;
+                        ensureHiddenInput().value = data.markdown;
+                        renderOutput();
+                        setStatus('ok', 'Rendered.', 'Last update: ' + formatTime(data.timestamp));
+                    } else {
+                        setStatus('ok', 'Up to date.', 'Last update: ' + formatTime(data.timestamp));
+                    }
+                } catch {
+                    setStatus('error', 'Cannot reach API server.', '');
+                }
+            }
 
-          if (data.timestamp !== lastTimestamp) {
-            lastTimestamp = data.timestamp;
-            ensureHiddenInput().value = data.markdown;
-            renderOutput();
-            setStatus('ok', 'Rendered.', 'Last update: ' + formatTime(data.timestamp));
-          } else {
-            setStatus('ok', 'Up to date.', 'Last update: ' + formatTime(data.timestamp));
-          }
-        } catch {
-          setStatus('error', 'Cannot reach API server.', '');
-        }
-      }
+            setStatus('waiting', 'Loading session…', '');
+            poll();
+            setInterval(poll, POLL_MS);
+        })();
 
-      setStatus('waiting', 'Loading session…', '');
-      poll();
-      setInterval(poll, POLL_MS);
-    })();
-
-    document.addEventListener('DOMContentLoaded', () => {
-      setDirection('ltr');
-    });
-  </script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setDirection('ltr');
+        });
+    </script>
 </body>
 </html>
