@@ -85,7 +85,7 @@ Fetch the stored markdown for a session. Used internally by the WebView to poll 
 
 **Request**
 ```http
-GET /api/content?id=a3f9c2d1e4b87f60...
+GET /api/markdown/content?id=a3f9c2d1e4b87f60...
 ```
 
 **Response `200 OK`**
