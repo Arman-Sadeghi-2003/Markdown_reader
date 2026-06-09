@@ -38,7 +38,13 @@
 }
 
 /* RTL Tables */
-.rtl table { direction: rtl; }
+.rtl .table-wrap {
+  direction: rtl;
+}
+
+.rtl .table-wrap table {
+  direction: ltr;
+}
 
 /* RTL Lists */
 .rtl ul,

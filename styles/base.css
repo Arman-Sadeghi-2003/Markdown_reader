@@ -8,6 +8,16 @@ html, body {
   height: 100%;
 }
 
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, sans-serif;
@@ -123,4 +133,15 @@ hr {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+img, video, iframe, svg {
+  max-width: 100%;
+  height: auto;
 }

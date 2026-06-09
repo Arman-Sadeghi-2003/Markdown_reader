@@ -72,10 +72,10 @@ window.initializeDragging = function(index) {
         console.warn(`Cannot find mermaid-content-${index}`);
         return;
     }
-    
+
     const viewport = contentEl.parentElement;
     const id = `mermaid-${index}`;
-    
+
     let isDragging = false;
     let startX = 0;
     let startY = 0;
@@ -84,29 +84,29 @@ window.initializeDragging = function(index) {
 
     const onMouseDown = (e) => {
         if (e.target.closest('.mermaid-controls')) return;
-        
+
         isDragging = true;
         startX = e.clientX;
         startY = e.clientY;
-        
+
         const state = getMermaidState(id);
         initialTranslateX = state.translateX;
         initialTranslateY = state.translateY;
-        
+
         viewport.style.cursor = 'grabbing';
         e.preventDefault();
     };
 
     const onMouseMove = (e) => {
         if (!isDragging) return;
-        
+
         const deltaX = e.clientX - startX;
         const deltaY = e.clientY - startY;
-        
+
         const state = getMermaidState(id);
         state.translateX = initialTranslateX + deltaX;
         state.translateY = initialTranslateY + deltaY;
-        
+
         applyTransform(id);
     };
 
@@ -122,6 +122,12 @@ window.initializeDragging = function(index) {
     document.addEventListener('mouseup', onMouseUp);
 
     viewport.style.cursor = 'grab';
+
+    const wrapper = viewport.closest('.mermaid-wrapper');
+    if (wrapper) {
+        wrapper.addEventListener('mouseenter', () => wrapper.classList.add('show-actions'));
+        wrapper.addEventListener('mouseleave', () => wrapper.classList.remove('show-actions'));
+    }
 };
 
 window.zoomMermaid = zoomMermaid;
