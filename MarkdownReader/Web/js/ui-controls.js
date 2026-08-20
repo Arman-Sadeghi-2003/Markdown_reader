@@ -23,13 +23,15 @@ function setDirection(direction) {
   if (direction === 'auto') {
     document.querySelector('.auto-btn')?.classList.add('active');
 
-    const inputText = document.getElementById('inputArea').value;
+    const inputText = getMarkdownSource();
     const detectedDir = detectTextDirection(inputText);
     const detectedLang = getDetectedLanguage(inputText);
 
     outputEl.className = detectedDir;
     langIndicator.textContent = `Language: ${detectedLang} (Auto: ${detectedDir.toUpperCase()})`;
-    renderOutput();
+
+    // Nothing open yet — leave the empty state alone
+    if (inputText.trim()) renderOutput();
     return;
   }
 

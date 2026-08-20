@@ -3,8 +3,48 @@
  * Handles rendering markdown content and Mermaid diagrams
  */
 
+/**
+ * Current markdown source. #inputArea is the hidden textarea the shell writes into;
+ * it is empty until a file is opened, so callers must tolerate "no document yet".
+ * @returns {string}
+ */
+function getMarkdownSource() {
+    return document.getElementById('inputArea')?.value ?? '';
+}
+
+/**
+ * Sanitizes rendered markup before it reaches innerHTML.
+ *
+ * Markdown files are untrusted input — marked passes raw HTML straight through, so a
+ * <script> or an onerror handler in a .md file would otherwise execute with this
+ * page's origin. DOMPurify's defaults drop script/iframe/object, event-handler
+ * attributes and javascript: URLs while keeping ordinary formatting HTML.
+ *
+ * Fails closed: if the library is missing, the markup is escaped rather than injected.
+ * @param {string} html
+ * @returns {string}
+ */
+function sanitizeMarkup(html) {
+    if (typeof DOMPurify === 'undefined' || typeof DOMPurify.sanitize !== 'function') {
+        console.error('DOMPurify is unavailable — rendering escaped source instead');
+        return escapeHtml(html);
+    }
+    return DOMPurify.sanitize(html);
+}
+
+/**
+ * Escapes a string for safe insertion into innerHTML.
+ * @param {string} text
+ * @returns {string}
+ */
+function escapeHtml(text) {
+    const holder = document.createElement('div');
+    holder.textContent = String(text);
+    return holder.innerHTML;
+}
+
 function renderOutput() {
-    const inputText = document.getElementById('inputArea').value.trim();
+    const inputText = getMarkdownSource().trim();
     const outputEl = document.getElementById('output');
     const langIndicator = document.getElementById('langIndicator');
 
@@ -24,8 +64,8 @@ function renderOutput() {
     }
 
     try {
-        // Render markdown
-        outputEl.innerHTML = marked.parse(inputText);
+        // Render markdown — always through the sanitizer, never raw
+        outputEl.innerHTML = sanitizeMarkup(marked.parse(inputText));
 
         outputEl.querySelectorAll('table').forEach(table => {
             if (table.parentElement && table.parentElement.classList.contains('table-wrap')) return;
@@ -122,8 +162,10 @@ function renderOutput() {
             outputEl.style.opacity = '1';
         }, 10);
     } catch (error) {
-        outputEl.innerHTML = `**Rendering Error:** ${error.message}`;
+        outputEl.innerHTML = `<strong>Rendering error:</strong> ${escapeHtml(error.message)}`;
     }
 }
 
 window.renderOutput = renderOutput;
+window.getMarkdownSource = getMarkdownSource;
+window.sanitizeMarkup = sanitizeMarkup;

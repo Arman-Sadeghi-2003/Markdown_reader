@@ -57,7 +57,7 @@ path the original browser version used.
 | Module | Role |
 |---|---|
 | `js/config.js` | Configures `marked` (GFM, `breaks: true`) and Mermaid. `applyMermaidThemeFromCSS()` reads CSS custom properties so diagrams follow the page palette. |
-| `js/markdown-renderer.js` | `renderOutput()`: parse Markdown, wrap tables in `.table-wrap` for horizontal scroll, convert `language-mermaid` code blocks into zoom/pan wrappers, run Mermaid, attach copy buttons, fade in. |
+| `js/markdown-renderer.js` | `renderOutput()`: parse Markdown, sanitize via `sanitizeMarkup()` (DOMPurify, fails closed), wrap tables in `.table-wrap` for horizontal scroll, convert `language-mermaid` code blocks into zoom/pan wrappers, run Mermaid, attach copy buttons, fade in. |
 | `js/rtl-detection.js` | Character-class regexes per script; `detectTextDirection()` flips to RTL only when RTL chars outnumber LTR chars **and** exceed 10, avoiding flips on short tokens. `getDetectedLanguage()` names the script family. |
 | `js/ui-controls.js` | Direction state (`currentDirection`, `autoDetectEnabled`), `setDirection()`, clipboard copy buttons with `execCommand` fallback, and a theme switcher (`aurora`/`midnight`/`ocean`/`forest`/`sunset`) persisted to `localStorage`. |
 | `js/mermaid-controls.js` | Per-diagram transform state; zoom (0.35×–3×), 50px pan steps, reset, press-and-hold repeat on the control buttons, and mouse dragging of the viewport. |
@@ -70,9 +70,15 @@ path the original browser version used.
 `base.css`, `components.css` and `rtl.css`.
 
 ### Bundled libraries
-`marked.min.js`, `mermaid.min.js`, Font Awesome (CSS + webfonts), and the **Vazir**
-Persian font family are all vendored under `Web/libs/` and `Web/fonts/`, so normal
-viewing needs no network.
+`marked.min.js`, `mermaid.min.js`, `purify.min.js` (DOMPurify 3.1.6), Font Awesome
+(CSS + webfonts), and the **Vazir** Persian font family are all vendored under
+`Web/libs/` and `Web/fonts/`, so normal viewing needs no network.
+
+### Security posture
+Markdown files are untrusted input. Parser output is sanitized with DOMPurify before
+it reaches `innerHTML`, and `viewer.html` declares a Content-Security-Policy
+(`default-src 'none'`, script limited to `'self'`, `'unsafe-inline'` for the inline
+toolbar handlers, and cdnjs for the PDF libraries).
 
 ## PDF export
 
@@ -102,10 +108,12 @@ Interactive chrome (copy buttons, diagram controls) is stripped before capture.
 │   └── Web/                      # copied to output, served from app.local
 │       ├── viewer.html
 │       ├── js/  styles/  fonts/  libs/
-├── DOC/PDF_FEATURE_GUIDE.md      # PDF feature write-up
-├── README.md                     # docs for the earlier browser-only version
+├── README.md                     # project readme
 ├── markdown_test.md              # sample document for manual testing
-└── docs/project-overview.md      # this file
+└── docs/
+    ├── project-overview.md       # this file
+    ├── PDF_FEATURE_GUIDE.md      # PDF export internals
+    └── issue-bug.md              # known issues and bugs
 ```
 
 ## Build & run

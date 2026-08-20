@@ -49,10 +49,13 @@ This is a read-only viewer — there is no editing pane.
   mouse dragging. Diagram colors are derived from the page's CSS variables.
 - **Code blocks** with a copy button (Clipboard API, `execCommand` fallback)
 - **Wide tables** scroll horizontally inside their own container
-- **PDF export** — see [DOC/PDF_FEATURE_GUIDE.md](DOC/PDF_FEATURE_GUIDE.md)
-- **Offline** — `marked`, `mermaid`, Font Awesome and the Vazir Persian font family are
-  all vendored. The one exception is PDF export, which fetches jsPDF and html2canvas
-  from a CDN on first use.
+- **PDF export** — see [docs/PDF_FEATURE_GUIDE.md](docs/PDF_FEATURE_GUIDE.md)
+- **Offline** — `marked`, `mermaid`, DOMPurify, Font Awesome and the Vazir Persian
+  font family are all vendored. The one exception is PDF export, which fetches jsPDF
+  and html2canvas from a CDN on first use.
+- **Sanitized rendering** — Markdown files are treated as untrusted input: parser
+  output passes through DOMPurify before it reaches the DOM, and the page carries a
+  Content-Security-Policy. See [docs/issue-bug.md](docs/issue-bug.md) #2.
 
 ## Project structure
 
@@ -76,9 +79,11 @@ This is a read-only viewer — there is no editing pane.
 │       │   └── main.js               # legacy browser-build init (unused)
 │       ├── styles/               # variables, base, components, rtl
 │       ├── fonts/                # Vazir family (Persian PDF output)
-│       └── libs/                 # marked, mermaid, Font Awesome
-├── DOC/PDF_FEATURE_GUIDE.md      # PDF export internals
-├── docs/project-overview.md      # architecture overview
+│       └── libs/                 # marked, mermaid, DOMPurify, Font Awesome
+├── docs/
+│   ├── project-overview.md       # architecture overview
+│   ├── PDF_FEATURE_GUIDE.md      # PDF export internals
+│   └── issue-bug.md              # known issues and bugs
 ├── markdown_test.md              # sample document for manual testing
 └── README.md
 ```

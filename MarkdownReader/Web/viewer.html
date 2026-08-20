@@ -5,10 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Reader</title>
 
+  <!--
+    Defense in depth behind the DOMPurify pass in markdown-renderer.js.
+    'unsafe-inline' is required for script because the toolbar and the generated
+    Mermaid controls use inline handlers; cdnjs is allowed only because PDF export
+    still loads jsPDF / html2canvas from there (see docs/issue-bug.md #8 — vendoring
+    those lets this drop to 'self').
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'none';
+    script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+    style-src  'self' 'unsafe-inline';
+    img-src    'self' data: blob:;
+    font-src   'self' data:;
+    connect-src 'self' https://cdnjs.cloudflare.com;
+    base-uri   'none';
+    form-action 'none';
+    object-src 'none';
+    frame-src  'none';">
+
   <!-- All assets served from the virtual host — no internet required -->
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
   <script src="libs/marked.min.js"></script>
   <script src="libs/mermaid.min.js"></script>
+  <script src="libs/purify.min.js"></script>
 
   <link rel="stylesheet" href="styles/variables.css">
   <link rel="stylesheet" href="styles/base.css">
@@ -131,6 +151,12 @@
     <span class="language-indicator" id="langIndicator">LTR</span>
   </div>
 
+  <!--
+    Markdown source, written by the shell via __renderMarkdown().
+    Present from first paint so direction controls can read it before a file is open.
+  -->
+  <textarea id="inputArea" hidden aria-hidden="true"></textarea>
+
   <!-- Output -->
   <div class="output-wrap">
     <div id="output" class="ltr">
@@ -163,13 +189,10 @@
    * renderOutput() — exactly the same path the web version uses.
    */
   window.__renderMarkdown = function(markdown) {
-    // Ensure the hidden textarea exists
-    let input = document.getElementById('inputArea');
+    const input = document.getElementById('inputArea');
     if (!input) {
-      input = document.createElement('textarea');
-      input.id = 'inputArea';
-      input.style.display = 'none';
-      document.body.appendChild(input);
+      console.error('__renderMarkdown: #inputArea is missing from viewer.html');
+      return;
     }
 
     input.value = markdown;
