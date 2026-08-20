@@ -1,123 +1,123 @@
-# AI Output Renderer - Refactored
+# Markdown Reader
 
-A clean, modular markdown renderer with RTL (Right-to-Left) language support.
+A Windows desktop app that opens `.md` files in a styled, offline viewer — with
+first-class RTL support (Persian, Arabic, Hebrew), Mermaid diagrams, and PDF export.
 
-## 📁 Project Structure
+- **Stack:** .NET 10 (`net10.0-windows`), WPF, WebView2
+- **Version:** 1.3.1.0
+- **Solution:** `MarkdownReader.slnx`
+
+## How it works
+
+The app is a thin WPF shell hosting a WebView2 control. C# owns the window, file I/O,
+and Windows integration; all rendering and styling lives in a bundled static web app
+under `MarkdownReader/Web/`.
+
+```
+WPF shell (C#)                         WebView2 content (HTML/CSS/JS)
+────────────────                       ─────────────────────────────
+App.xaml.cs        ── startup ──────►  https://app.local/viewer.html
+MainWindow.xaml.cs ── OpenFile() ───►  window.__renderMarkdown(json)
+                                        └─► renderOutput() → marked → DOM
+                                                           → mermaid.run()
+                                                           → PDF export
+```
+
+`Web/` is copied to the output directory and mapped to the virtual host **`app.local`**
+via `SetVirtualHostNameToFolderMapping`, so the page loads over `https://` with no
+local server. Markdown text is JSON-encoded in C# and pushed into the page with
+`ExecuteScriptAsync`.
+
+## Opening a file
+
+Three ways, all restricted to `.md`:
+
+1. **Double-click a `.md` file in Explorer** — the app registers a `MarkdownReader.md`
+   ProgID under `HKCU\SOFTWARE\Classes` on first launch.
+2. **Drag & drop** onto the window (a drop overlay appears while dragging).
+3. **Open File** button in the title bar.
+
+This is a read-only viewer — there is no editing pane.
+
+## Features
+
+- **GitHub Flavored Markdown** via bundled `marked` (`gfm: true`, `breaks: true`)
+- **RTL support** — LTR / RTL / **Auto** toggle. Auto-detection counts characters per
+  script and only flips to RTL when RTL characters outnumber LTR *and* exceed 10, so
+  short foreign tokens don't flip the whole document.
+- **Mermaid diagrams** — rendered inline, each with zoom (0.35×–3×), pan, reset, and
+  mouse dragging. Diagram colors are derived from the page's CSS variables.
+- **Code blocks** with a copy button (Clipboard API, `execCommand` fallback)
+- **Wide tables** scroll horizontally inside their own container
+- **PDF export** — see [DOC/PDF_FEATURE_GUIDE.md](DOC/PDF_FEATURE_GUIDE.md)
+- **Offline** — `marked`, `mermaid`, Font Awesome and the Vazir Persian font family are
+  all vendored. The one exception is PDF export, which fetches jsPDF and html2canvas
+  from a CDN on first use.
+
+## Project structure
 
 ```
 /
-├── index.html                  # Main HTML file
-├── styles/
-│   ├── variables.css          # CSS custom properties/variables
-│   ├── base.css               # Base typography and general styles
-│   ├── components.css         # Component-specific styles
-│   └── rtl.css                # RTL language support styles
-├── js/
-│   ├── config.js              # Library configuration (marked, mermaid)
-│   ├── rtl-detection.js       # RTL language detection logic
-│   ├── ui-controls.js         # UI controls and interactions
-│   ├── markdown-renderer.js   # Markdown rendering logic
-│   └── main.js                # Main initialization and event listeners
-└── README.md                  # This file
+├── MarkdownReader.slnx           # solution
+├── MarkdownReader/
+│   ├── App.xaml(.cs)             # startup, .md association, args[0] handling
+│   ├── MainWindow.xaml(.cs)      # title bar, WebView2 host, drag & drop, dialog
+│   ├── FileAssociation.cs        # ProgID registration + SHChangeNotify
+│   ├── Assets/                   # application icon
+│   └── Web/                      # copied to output, served from app.local
+│       ├── viewer.html           # entry point: toolbar + output pane
+│       ├── js/
+│       │   ├── config.js             # marked + mermaid configuration
+│       │   ├── markdown-renderer.js  # renderOutput(): parse, wrap, run mermaid
+│       │   ├── rtl-detection.js      # script detection + direction heuristic
+│       │   ├── ui-controls.js        # direction state, copy buttons, themes
+│       │   ├── mermaid-controls.js   # zoom / pan / drag per diagram
+│       │   ├── pdf-export.js         # jsPDF-based export
+│       │   └── main.js               # legacy browser-build init (unused)
+│       ├── styles/               # variables, base, components, rtl
+│       ├── fonts/                # Vazir family (Persian PDF output)
+│       └── libs/                 # marked, mermaid, Font Awesome
+├── DOC/PDF_FEATURE_GUIDE.md      # PDF export internals
+├── docs/project-overview.md      # architecture overview
+├── markdown_test.md              # sample document for manual testing
+└── README.md
 ```
 
-## 🎯 Features
+## Build & run
 
-- **Markdown Rendering**: Full support for GitHub Flavored Markdown (GFM)
-- **RTL Support**: Auto-detection and manual control for RTL languages (Arabic, Hebrew, Persian, etc.)
-- **Code Highlighting**: Beautiful code blocks with copy functionality
-- **Mermaid Diagrams**: Render flowcharts and diagrams
-- **Responsive Design**: Works on all screen sizes
-- **Clean Architecture**: Modular, maintainable code structure
-
-## 🚀 Usage
-
-Simply open `index.html` in a modern web browser. No build process required!
-
-### Keyboard Shortcuts
-- `Ctrl+Enter` or `Cmd+Enter`: Render output
-
-### Direction Controls
-- **LTR**: Left-to-Right (default)
-- **RTL**: Right-to-Left
-- **Auto**: Automatic language detection
-
-## 📦 Dependencies
-
-All dependencies are loaded via CDN:
-- [Marked.js](https://marked.js.org/) - Markdown parser
-- [Mermaid](https://mermaid.js.org/) - Diagram rendering
-- [Font Awesome](https://fontawesome.com/) - Icons
-
-## 🔧 Customization
-
-### Colors
-Edit `styles/variables.css` to change the color scheme:
-```css
-:root {
-    --primary: #4cafef;
-    --primary-dark: #2e89d8;
-    --success: #4caf50;
-    /* ... more variables */
-}
+```bash
+dotnet build MarkdownReader/MarkdownReader.csproj
 ```
 
-### Markdown Options
-Edit `js/config.js` to adjust markdown parsing behavior.
+Requirements: .NET 10 SDK (Windows), the WebView2 runtime, and the sole NuGet
+dependency `Microsoft.Web.WebView2` (1.0.4015-prerelease).
 
-### RTL Language Support
-Add new RTL language patterns in `js/rtl-detection.js`:
-```javascript
-const RTL_LANGUAGES = {
-    yourLanguage: /[regex-pattern]/,
-    // ...
-};
-```
+WebView2 user data is stored in `%APPDATA%\MarkdownReader`. DevTools and the default
+context menu are disabled in the hosted page.
 
-## 📝 File Descriptions
+## Theming
 
-### HTML
-- **index.html**: Main entry point with semantic structure
+`styles/variables.css` defines the "Luxury Light" palette — warm ivory background
+(`#F7F2EA`) with a bronze accent (`#9C7A53`) — as CSS custom properties consumed by
+the other stylesheets and by the WPF title bar. Change the values there to restyle
+the viewer.
 
-### CSS Files
-- **variables.css**: All CSS custom properties in one place
-- **base.css**: Typography, links, lists, and basic elements
-- **components.css**: Specific component styles (buttons, code blocks, tables, etc.)
-- **rtl.css**: RTL-specific style overrides
+> **Note:** `ui-controls.js` also contains a five-theme switcher (Aurora, Midnight,
+> Ocean, Forest, Sunset) carried over from the earlier browser-only build. It is
+> currently inert in the desktop app: no stylesheet defines `[data-theme]` rules,
+> `viewer.html` has no theme UI, and its initializer is only called from the unused
+> `main.js`.
 
-### JavaScript Files
-- **config.js**: Initializes and configures external libraries
-- **rtl-detection.js**: Contains RTL detection logic and language patterns
-- **ui-controls.js**: Handles UI interactions (direction toggle, copy buttons)
-- **markdown-renderer.js**: Core rendering functionality
-- **main.js**: Event listeners and initialization
+## Extending
 
-## 🎨 Code Quality Improvements
+- New styling → the matching file in `styles/`
+- New rendering behavior → `js/markdown-renderer.js`
+- New RTL script → add a pattern to `RTL_LANGUAGES` in `js/rtl-detection.js`
+- New OS integration → the C# side (`MainWindow.xaml.cs`, `FileAssociation.cs`)
 
-This refactored version includes:
-- ✅ Separation of concerns
-- ✅ Modular architecture
-- ✅ Clear documentation
-- ✅ Easy to maintain and extend
-- ✅ Better readability
-- ✅ Reusable components
+Keep the shell/web split intact: C# should stay responsible only for the window, file
+access, and OS integration.
 
-## 🌐 Browser Support
+## License
 
-Works in all modern browsers:
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-
-## 📄 License
-
-This is a refactored version of the AI Output Renderer. Use freely for personal or commercial projects.
-
-## 🤝 Contributing
-
-To add features:
-1. Add styles to appropriate CSS file
-2. Add logic to appropriate JS module
-3. Update documentation
-
-Keep the modular structure intact!
+See [LICENSE](LICENSE).
