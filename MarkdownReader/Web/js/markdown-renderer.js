@@ -27,6 +27,15 @@ function renderOutput() {
         // Render markdown
         outputEl.innerHTML = marked.parse(inputText);
 
+        outputEl.querySelectorAll('table').forEach(table => {
+            if (table.parentElement && table.parentElement.classList.contains('table-wrap')) return;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'table-wrap';
+            table.parentNode.insertBefore(wrap, table);
+            wrap.appendChild(table);
+        });
+
         // Find Mermaid blocks
         const mermaidBlocks = outputEl.querySelectorAll('pre code.language-mermaid, code.language-mermaid');
         const mermaidContainers = [];
@@ -36,31 +45,31 @@ function renderOutput() {
             wrapper.className = 'mermaid-wrapper';
 
             const controls = document.createElement('div');
-            controls.className = 'mermaid-controls';
+            controls.className = 'mermaid-controls mermaid-actions';
             controls.innerHTML = `
-                <button onmousedown="startRepeat(() => zoomMermaid('mermaid-${index}', 'in'), 'zoom-in-${index}')" 
-                        onmouseup="stopRepeat('zoom-in-${index}')" 
-                        onmouseleave="stopRepeat('zoom-in-${index}')" 
+                <button onmousedown="startRepeat(() => zoomMermaid('mermaid-${index}', 'in'), 'zoom-in-${index}')"
+                        onmouseup="stopRepeat('zoom-in-${index}')"
+                        onmouseleave="stopRepeat('zoom-in-${index}')"
                         title="Zoom In">🔍+</button>
-                <button onmousedown="startRepeat(() => zoomMermaid('mermaid-${index}', 'out'), 'zoom-out-${index}')" 
-                        onmouseup="stopRepeat('zoom-out-${index}')" 
-                        onmouseleave="stopRepeat('zoom-out-${index}')" 
+                <button onmousedown="startRepeat(() => zoomMermaid('mermaid-${index}', 'out'), 'zoom-out-${index}')"
+                        onmouseup="stopRepeat('zoom-out-${index}')"
+                        onmouseleave="stopRepeat('zoom-out-${index}')"
                         title="Zoom Out">🔍−</button>
-                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'up'), 'pan-up-${index}')" 
-                        onmouseup="stopRepeat('pan-up-${index}')" 
-                        onmouseleave="stopRepeat('pan-up-${index}')" 
+                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'up'), 'pan-up-${index}')"
+                        onmouseup="stopRepeat('pan-up-${index}')"
+                        onmouseleave="stopRepeat('pan-up-${index}')"
                         title="Pan Up">⬆️</button>
-                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'down'), 'pan-down-${index}')" 
-                        onmouseup="stopRepeat('pan-down-${index}')" 
-                        onmouseleave="stopRepeat('pan-down-${index}')" 
+                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'down'), 'pan-down-${index}')"
+                        onmouseup="stopRepeat('pan-down-${index}')"
+                        onmouseleave="stopRepeat('pan-down-${index}')"
                         title="Pan Down">⬇️</button>
-                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'left'), 'pan-left-${index}')" 
-                        onmouseup="stopRepeat('pan-left-${index}')" 
-                        onmouseleave="stopRepeat('pan-left-${index}')" 
+                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'left'), 'pan-left-${index}')"
+                        onmouseup="stopRepeat('pan-left-${index}')"
+                        onmouseleave="stopRepeat('pan-left-${index}')"
                         title="Pan Left">⬅️</button>
-                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'right'), 'pan-right-${index}')" 
-                        onmouseup="stopRepeat('pan-right-${index}')" 
-                        onmouseleave="stopRepeat('pan-right-${index}')" 
+                <button onmousedown="startRepeat(() => panMermaid('mermaid-${index}', 'right'), 'pan-right-${index}')"
+                        onmouseup="stopRepeat('pan-right-${index}')"
+                        onmouseleave="stopRepeat('pan-right-${index}')"
                         title="Pan Right">➡️</button>
                 <button onclick="resetMermaid('mermaid-${index}')" title="Reset View">🔄</button>
             `;

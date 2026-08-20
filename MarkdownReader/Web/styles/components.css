@@ -1,0 +1,670 @@
+/* Component Styles — Luxury Light Theme */
+
+/* Input Area */
+#inputArea {
+    width: 100%;
+    height: 150px;
+    padding: 16px;
+    font-size: 15px;
+    border-radius: 12px;
+    border: 2px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-color);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 200ms ease;
+    resize: vertical;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    line-height: 1.6;
+}
+
+    #inputArea:focus {
+        border-color: var(--input-border-focus);
+        outline: none;
+        box-shadow: 0 0 0 4px var(--focus), inset 0 2px 8px rgba(0, 0, 0, 0.04);
+        transform: translateY(-1px);
+    }
+
+    #inputArea::placeholder {
+        color: var(--input-placeholder);
+        opacity: 0.8;
+    }
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+/* Render Button */
+button.render {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #FFFAF5;
+    box-shadow: 0 4px 15px var(--shadow-md);
+    transition: all 200ms ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+    button.render::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    button.render:hover::before {
+        left: 100%;
+    }
+
+    button.render:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--shadow-md);
+    }
+
+    button.render:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 15px var(--shadow);
+    }
+
+/* Direction Toggle Buttons */
+.direction-toggle {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 2px solid var(--input-border);
+    border-radius: 12px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    transition: all 180ms ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .direction-toggle:hover {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+        transform: translateY(-1px);
+    }
+
+    .direction-toggle.active {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #FFFAF5;
+        border-color: var(--primary-dark);
+        box-shadow: 0 4px 12px var(--shadow-md);
+    }
+
+.direction-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Language Indicator */
+.language-indicator {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted-text);
+    padding: 8px 14px;
+    background: var(--primary-soft);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Output Container */
+#output {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px var(--shadow);
+    min-height: 100px;
+    width: 100%;
+}
+
+/* Code Blocks */
+pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 40px 16px 16px 16px;
+    border-radius: 12px;
+    overflow-x: auto;
+    position: relative;
+    margin: 1.5rem 0;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-left: 4px solid var(--primary);
+    box-shadow: 0 4px 15px var(--shadow-lg);
+}
+
+    pre::before {
+        content: '> Code';
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(246, 240, 232, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        pointer-events: none;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    pre code {
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        display: block;
+        margin: 0;
+        background: none !important;
+        color: inherit;
+        padding: 0;
+        border: none;
+        font-size: 14px;
+    }
+
+/* Inline Code */
+code:not(pre code) {
+    background-color: var(--inline-code-bg);
+    color: var(--inline-code-text);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+}
+
+/* Copy Button */
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: rgba(246, 240, 232, 0.1);
+    border: 1px solid rgba(246, 240, 232, 0.15);
+    color: var(--code-text);
+    border-radius: 10px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    transition: all 180ms ease;
+}
+
+    .copy-btn:hover {
+        background: rgba(246, 240, 232, 0.2);
+        border-color: rgba(246, 240, 232, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .copy-btn:active {
+        transform: translateY(0);
+    }
+
+/* Blockquotes */
+blockquote {
+    background: var(--blockquote-bg);
+    border-left: 4px solid var(--blockquote-border);
+    margin: 1.5rem 0;
+    padding: 16px 20px;
+    border-radius: 0 12px 12px 0;
+    color: var(--muted-text);
+    position: relative;
+    font-style: italic;
+    box-shadow: 0 2px 10px var(--shadow);
+}
+
+    blockquote::before {
+        content: '\201C';
+        font-size: 3em;
+        color: var(--primary);
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        opacity: 0.25;
+        font-style: normal;
+    }
+
+    blockquote p {
+        margin: 0;
+        padding-left: 30px;
+        line-height: 1.7;
+    }
+
+/* Tables */
+.table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+    .table-wrap table {
+        width: max-content;
+        min-width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px var(--shadow);
+    }
+
+    .table-wrap th,
+    .table-wrap td {
+        border: 1px solid var(--border-color);
+        padding: 12px 16px;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    .table-wrap th {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #FFFAF5;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .table-wrap tr:nth-child(even) {
+        background-color: var(--table-zebra);
+    }
+
+    .table-wrap tr:hover {
+        background-color: var(--primary-soft);
+    }
+
+/* Mermaid */
+.mermaid-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: 0 4px 15px var(--shadow);
+    width: 100%;
+}
+
+.mermaid-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+    background: var(--card-bg);
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+    .mermaid-controls button {
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        border-radius: 10px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 180ms ease;
+        font-size: 15px;
+        color: var(--text-color);
+    }
+
+        .mermaid-controls button:hover {
+            background: var(--primary);
+            color: #FFFAF5;
+            border-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .mermaid-controls button:active {
+            transform: scale(0.95);
+        }
+
+    .mermaid-controls .divider {
+        width: 1px;
+        background: var(--border-color);
+        margin: 0 4px;
+    }
+
+.mermaid-viewport {
+    overflow: auto;
+    position: relative;
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-content {
+    transition: transform 0.3s ease;
+    transform-origin: center center;
+    display: inline-block;
+    position: relative;
+}
+
+.mermaid-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 20;
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px var(--shadow);
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.mermaid-wrapper:hover .mermaid-actions,
+.mermaid-wrapper .mermaid-actions:hover,
+.mermaid-wrapper.show-actions .mermaid-actions {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* PDF Button */
+.pdf-download-btn {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    transition: all 200ms ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+    .pdf-download-btn:hover {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #FFFAF5;
+        border-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--shadow-md);
+    }
+
+    .pdf-download-btn:active {
+        transform: translateY(0);
+    }
+
+    .pdf-download-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+}
+
+    .toolbar .direction-controls {
+        margin-left: auto;
+    }
+
+/* Status Bar */
+.status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 13px;
+    color: var(--muted-text);
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--device-off);
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+
+    .status-dot.waiting {
+        background: var(--color-warning);
+        animation: statusPulse 1.5s infinite;
+    }
+
+    .status-dot.ok {
+        background: var(--color-success);
+    }
+
+    .status-dot.error {
+        background: var(--color-error);
+    }
+
+@keyframes statusPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+}
+
+.status-text {
+    flex: 1;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 60px 20px;
+    color: var(--muted-text);
+    text-align: center;
+}
+
+    .empty-state i {
+        font-size: 2.8rem;
+        opacity: 0.3;
+        color: var(--primary);
+    }
+
+    .empty-state p {
+        font-size: 15px;
+        font-style: italic;
+        max-width: 340px;
+        line-height: 1.5;
+    }
+
+    .empty-state code {
+        background: var(--inline-code-bg);
+        color: var(--inline-code-text);
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-style: normal;
+    }
+
+/* Images */
+#output img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1rem 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px var(--shadow);
+    cursor: pointer;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+    #output img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 20px var(--shadow-md);
+    }
+
+/* Task Lists */
+#output ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#output li {
+    position: relative;
+    padding-left: 0;
+    margin-bottom: 0.8em;
+}
+
+    #output li.task-list-item {
+        list-style: none;
+        padding-left: 0;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75em;
+    }
+
+        #output li.task-list-item > input[type="checkbox"] {
+            position: static;
+            flex: 0 0 18px;
+            width: 18px;
+            height: 18px;
+            margin: 0.2em 0 0;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid var(--input-border);
+            border-radius: 4px;
+            background: var(--input-bg);
+            transition: all 0.2s ease;
+        }
+
+        #output li.task-list-item > *:not(input[type="checkbox"]) {
+            flex: 1;
+            min-width: 0;
+        }
+
+.rtl #output li.task-list-item {
+    padding-right: 0;
+}
+
+#output li.task-list-item > input[type="checkbox"]:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus);
+}
+
+#output li.task-list-item > input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-color: var(--primary-dark);
+}
+
+    #output li.task-list-item > input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #FFFAF5;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+#output li.task-list-item input[type="checkbox"]:checked + * {
+    text-decoration: line-through;
+    color: var(--muted-text);
+    opacity: 0.7;
+}
+
+#output ul ul {
+    margin-top: 0.5em;
+    padding-left: 1.5em;
+}
+
+#output ul:not(.contains-task-list) {
+    list-style: disc;
+    padding-left: 1.5em;
+}
+
+    #output ul:not(.contains-task-list) li {
+        padding-left: 0;
+    }
+
+#output ol {
+    list-style: decimal;
+    padding-left: 1.5em;
+}
+
+    #output ol li {
+        padding-left: 0;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+
+    button.render {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .direction-controls {
+        justify-content: center;
+    }
+
+    .pdf-download-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

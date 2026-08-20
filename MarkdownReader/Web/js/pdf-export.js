@@ -318,7 +318,9 @@ async function performPDFExport(outputEl, btn, originalText) {
         }
 
         // Process content elements
-        const children = Array.from(outputEl.children);
+        const children = Array.from(outputEl.children).flatMap(el =>
+            el.classList.contains('table-wrap') ? Array.from(el.children) : [el]
+        );
 
         for (const element of children) {
             const tagName = element.tagName.toLowerCase();
@@ -401,52 +403,105 @@ async function performPDFExport(outputEl, btn, originalText) {
 
             // Tables
             if (tagName === 'table') {
-                checkPageBreak(30);
+                const headers = [];
+                const rows = [];
 
-                const headers = Array.from(element.querySelectorAll('th')).map(th => getCleanText(th));
-                const rows = Array.from(element.querySelectorAll('tr')).slice(1).map(tr =>
-                    Array.from(tr.querySelectorAll('td')).map(td => getCleanText(td))
-                );
+                const thead = element.querySelector('thead');
+                const tbody = element.querySelector('tbody');
 
-                if (headers.length > 0) {
-                    doc.setFontSize(fontSize.body);
-                    doc.setFont(fontToUse, 'normal');
-
-                    const colWidth = maxWidth / headers.length;
-
-                    // Draw header
-                    doc.setFillColor(99, 102, 241);
-                    doc.setTextColor(255, 255, 255);
-                    doc.rect(margin, yPosition, maxWidth, 8, 'F');
-
-                    headers.forEach((header, i) => {
-                        doc.text(header, margin + (i * colWidth) + 2, yPosition + 5);
-                    });
-
-                    yPosition += 8;
-                    doc.setTextColor(0, 0, 0);
-                    doc.setFont(fontToUse, 'normal');
-
-                    // Draw rows
-                    rows.forEach((row, rowIndex) => {
-                        checkPageBreak(8);
-
-                        if (rowIndex % 2 === 0) {
-                            doc.setFillColor(249, 249, 249);
-                            doc.rect(margin, yPosition, maxWidth, 7, 'F');
-                        }
-
-                        row.forEach((cell, i) => {
-                            const cellText = doc.splitTextToSize(cell, colWidth - 4);
-                            doc.text(cellText[0] || '', margin + (i * colWidth) + 2, yPosition + 5);
+                if (thead) {
+                    const headRow = thead.querySelector('tr');
+                    if (headRow) {
+                        headRow.querySelectorAll('th, td').forEach(cell => {
+                            headers.push(getCleanText(cell));
                         });
-
-                        yPosition += 7;
-                    });
-
-                    yPosition += 5;
+                    }
                 }
 
+                if (tbody) {
+                    tbody.querySelectorAll('tr').forEach(tr => {
+                        const row = [];
+                        tr.querySelectorAll('td, th').forEach(cell => {
+                            row.push(getCleanText(cell));
+                        });
+                        if (row.length) rows.push(row);
+                    });
+                } else {
+                    const allTr = Array.from(element.querySelectorAll('tr'));
+                    const start = headers.length ? 1 : 0;
+                    for (let i = start; i < allTr.length; i++) {
+                        const row = [];
+                        allTr[i].querySelectorAll('td, th').forEach(cell => {
+                            row.push(getCleanText(cell));
+                        });
+                        if (row.length) rows.push(row);
+                    }
+                }
+
+                const allRows = rows.filter(r => r.length > 0);
+                const colCount = Math.max(headers.length, ...allRows.map(r => r.length), 1);
+
+                const tableMargin = 6;
+                const tableWidth = pageWidth - tableMargin * 2;
+                const colWidth = tableWidth / colCount;
+                const headerFont = 7;
+                const cellFont = 7;
+                const pad = 1.5;
+                const lineH = 3.6;
+
+                function rowHeight(row, size) {
+                    doc.setFontSize(size);
+                    let maxH = 7;
+                    for (let i = 0; i < colCount; i++) {
+                        const text = row[i] || '';
+                        const lines = doc.splitTextToSize(text, colWidth - pad * 2);
+                        const h = Math.max(7, lines.length * lineH + 1);
+                        if (h > maxH) maxH = h;
+                    }
+                    return maxH;
+                }
+
+                function drawRow(row, y, isHeader, zebra) {
+                    const size = isHeader ? headerFont : cellFont;
+                    const h = rowHeight(row, size);
+
+                    if (y + h > pageHeight - tableMargin) {
+                        doc.addPage();
+                        y = tableMargin;
+                    }
+
+                    for (let c = 0; c < colCount; c++) {
+                        const x = tableMargin + c * colWidth;
+                        const text = row[c] || '';
+
+                        if (isHeader) {
+                            doc.setFillColor(99, 102, 241);
+                            doc.setTextColor(255, 255, 255);
+                        } else {
+                            doc.setFillColor(zebra ? 249 : 255, zebra ? 249 : 255, zebra ? 249 : 255);
+                            doc.setTextColor(0, 0, 0);
+                        }
+
+                        doc.rect(x, y, colWidth, h, 'F');
+                        doc.rect(x, y, colWidth, h);
+
+                        doc.setFontSize(size);
+                        const lines = doc.splitTextToSize(text, colWidth - pad * 2);
+                        doc.text(lines, x + pad, y + 4.5);
+                    }
+
+                    return y + h;
+                }
+
+                if (headers.length) {
+                    yPosition = drawRow(headers, yPosition, true, false);
+                }
+
+                allRows.forEach((row, index) => {
+                    yPosition = drawRow(row, yPosition, false, index % 2 === 0);
+                });
+
+                yPosition += 4;
                 continue;
             }
 

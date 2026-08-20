@@ -1,0 +1,129 @@
+﻿<Window
+    x:Class="MarkdownReader.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MarkdownReader"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+    Title="MainWindow"
+    MinWidth="800"
+    MinHeight="550"
+    Icon="pack://application:,,,/Assets/generated-image.ico"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <!--  Title bar style  -->
+        <Style x:Key="TitleBar" TargetType="Border">
+            <Setter Property="Background" Value="#F3ECE2" />
+            <Setter Property="BorderBrush" Value="#E5D8C8" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Padding" Value="16,10" />
+        </Style>
+
+        <Style x:Key="TitleText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#2E241D" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="SubtitleText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#9A8B7D" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="OpenButton" TargetType="Button">
+            <Setter Property="Background" Value="#9C7A53" />
+            <Setter Property="Foreground" Value="#FFFAF5" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#896948" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#73563B" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <!--  Drop overlay row spans all  -->
+        </Grid.RowDefinitions>
+
+        <!--  Title Bar  -->
+        <Border Grid.Row="0" Style="{StaticResource TitleBar}">
+            <DockPanel>
+                <Button
+                    Margin="0,0,0,0"
+                    Click="OpenButton_Click"
+                    DockPanel.Dock="Right"
+                    Style="{StaticResource OpenButton}">
+                    📂 Open File
+                </Button>
+
+                <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                    <TextBlock
+                        x:Name="TitleLabel"
+                        Style="{StaticResource TitleText}"
+                        Text="Markdown Reader" />
+                    <TextBlock
+                        x:Name="SubtitleLabel"
+                        Style="{StaticResource SubtitleText}"
+                        Text="Drop a .md file or click Open File" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!--  WebView2  -->
+        <wv2:WebView2
+            x:Name="WebView"
+            Grid.Row="1"
+            HorizontalAlignment="Stretch" />
+
+        <!--  Drag-over overlay (hidden by default)  -->
+        <Border
+            x:Name="DropOverlay"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Background="#CC9C7A53"
+            Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="64"
+                    Text="📄" />
+                <TextBlock
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="22"
+                    FontWeight="SemiBold"
+                    Foreground="#FFFAF5"
+                    Text="Drop your .md file here" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

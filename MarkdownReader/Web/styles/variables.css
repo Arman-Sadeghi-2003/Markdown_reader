@@ -1,0 +1,82 @@
+/* =========================================
+   Luxury Light Theme
+   Warm ivory & champagne — Bronze accent
+   Matches application color palette
+========================================= */
+
+:root {
+    /* Backgrounds */
+    --background:        #F7F2EA;
+    --card-bg:           #FFFBF7;
+    --surface:           #FCF8F2;
+    --surface-alt:       #F6F0E8;
+
+    /* Text */
+    --text-color:        #2E241D;
+    --muted-text:        #6A5A4F;
+    --text-tertiary:     #9A8B7D;
+    --text-disabled:     #C2B5A8;
+
+    /* Borders */
+    --border-color:      #E5D8C8;
+    --border-subtle:     #F0E7DC;
+    --border-strong:     #D3C0AA;
+    --separator:         #E9DED1;
+
+    /* Primary accent — Bronze */
+    --primary:           #9C7A53;
+    --primary-dark:      #896948;
+    --primary-pressed:   #73563B;
+    --primary-soft:      #E9D9C8;
+    --primary-glow:      #F3E5D7;
+
+    /* Secondary accent */
+    --accent-secondary:      #7B6A58;
+    --accent-secondary-soft: #E7DDD2;
+
+    /* Interactive */
+    --button-hover:      #F1E3D4;
+    --focus:             rgba(156, 122, 83, 0.25);
+    --shadow:            rgba(97, 75, 54, 0.14);
+    --shadow-md:         rgba(122, 98, 75, 0.22);
+    --shadow-lg:         rgba(97, 75, 54, 0.30);
+
+    /* Inputs */
+    --input-bg:          #FFFCF8;
+    --input-border:      #E1D3C4;
+    --input-border-focus:#9C7A53;
+    --input-placeholder: #AB9C8F;
+
+    /* Navigation */
+    --nav-bg:            #F3ECE2;
+    --nav-item-hover:    #F8F1E8;
+    --nav-item-selected: #EBDDCC;
+
+    /* Status */
+    --color-success:     #5E7A5A;
+    --color-success-soft:#DCE8DA;
+    --color-warning:     #B07A2A;
+    --color-warning-soft:#F4E4C7;
+    --color-error:       #A35E5A;
+    --color-error-soft:  #F3D9D7;
+    --color-info:        #6D7E8B;
+    --color-info-soft:   #DDE6EB;
+
+    /* Device states */
+    --device-on:         #D5B07A;
+    --device-off:        #CBBFB2;
+    --device-idle:       #E6DCCF;
+
+    /* Code blocks */
+    --code-bg:           #2E241D;
+    --code-text:         #F6F0E8;
+    --inline-code-bg:    #E9D9C8;
+    --inline-code-text:  #73563B;
+
+    /* Blockquote */
+    --blockquote-bg:     rgba(156, 122, 83, 0.06);
+    --blockquote-border: #9C7A53;
+
+    /* Table */
+    --table-zebra:       rgba(156, 122, 83, 0.04);
+}

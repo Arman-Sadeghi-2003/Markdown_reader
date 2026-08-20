@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyVersion>1.3.1.0</AssemblyVersion>
+    <FileVersion>1.3.1.0</FileVersion>
+    <Copyright>AILC</Copyright>
+    <Title>MarkdownReader</Title>
+    <ApplicationIcon>Assets\generated-image.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4015-prerelease" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Web\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Assets\generated-image.ico" />
+    <None Remove="Assets\generated-image.png" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="Assets\generated-image.ico" />
+    <Resource Include="Assets\generated-image.png" />
+  </ItemGroup>
+  
+</Project>
